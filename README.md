@@ -11,7 +11,7 @@ _Cloaking (gizleme) Arama motorları için basit bir gizleme tekniği_
 ## 🌐 Telif Hakkı ve Lisans
 
 - _Copyright (C) 2025 by_ [ofarukbicer](https://github.com/ofarukbicer) ❤️️
-- [GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007](https://github.com/ofarukicer/cloaking/blob/main/LICENSE) _Koşullarına göre lisanslanmıştır.._
+- [GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007](https://github.com/ofarukbicer/cloaking/blob/main/LICENSE) _Koşullarına göre lisanslanmıştır.._
 
 ## ♻️ İletişim
 
