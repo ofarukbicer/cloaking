@@ -36,18 +36,20 @@ const server = http.createServer((req, res) => {
       userAgent.toLowerCase().includes("bingbot"))
   ) {
     console.log("🤖 Bot detected! Redirecting to bot server...");
-    return createProxyMiddleware({ target: targets.bot })(req, res);
+    createProxyMiddleware({ target: targets.bot })(req, res);
+    return;
   }
 
   if (!referer) {
     console.log(
       "🚨 Suspicious access detected! Redirecting to unknown server..."
     );
-    return createProxyMiddleware({ target: targets.unknown })(req, res);
+    createProxyMiddleware({ target: targets.unknown })(req, res);
+    return;
   }
 
   console.log("👤 Normal user detected! Redirecting to default server...");
-  return createProxyMiddleware({ target: targets.default })(req, res);
+  createProxyMiddleware({ target: targets.default })(req, res);
 });
 
 const PORT = 8080;
