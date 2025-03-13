@@ -1,0 +1,16 @@
+services:
+  cloaking:
+    image: ofarukbicer/cloaking:latest
+    container_name: cloaking_proxy
+    ports:
+      - "8080:8080"
+    environment:
+      - DEFAULT_URL=http://default-server.com
+      - BOT_URL=http://bot-server.com
+      - UNKNOWN_URL=http://unknown-server.com
+    networks:
+      - cloaking_network
+
+networks:
+  cloaking_network:
+    driver: bridge
