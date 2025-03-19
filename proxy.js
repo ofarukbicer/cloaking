@@ -1,6 +1,6 @@
 require("dotenv").config();
 const http = require("http");
-const { createProxyMiddleware } = require("http-proxy-middleware");
+const httpProxy = require("http-proxy");
 
 const targets = {
   default: process.env.DEFAULT_URL,
@@ -8,6 +8,7 @@ const targets = {
   unknown: process.env.UNKNOWN_URL,
 };
 
+// Çevre değişkenlerini kontrol et
 function checkEnvVariables(targets) {
   Object.entries(targets).forEach(([key, value]) => {
     if (!value) {
@@ -22,6 +23,9 @@ function checkEnvVariables(targets) {
 
 checkEnvVariables(targets);
 
+// Proxy sunucusunu oluştur
+const proxy = httpProxy.createProxyServer();
+
 const server = http.createServer((req, res) => {
   const userIP = req.connection.remoteAddress || req.socket.remoteAddress;
   const userAgent = req.headers["user-agent"];
@@ -29,27 +33,25 @@ const server = http.createServer((req, res) => {
 
   console.log(`📡 New Request: IP: ${userIP}, User-Agent: ${userAgent}`);
 
-  if (
-    userAgent &&
-    (userAgent.toLowerCase().includes("googlebot") ||
-      userAgent.toLowerCase().includes("yandexbot") ||
-      userAgent.toLowerCase().includes("bingbot"))
-  ) {
-    console.log("🤖 Bot detected! Redirecting to bot server...");
-    createProxyMiddleware({ target: targets.bot })(req, res);
-    return;
-  }
+  let target = targets.default; // Varsayılan hedef
 
-  if (!referer) {
+  if (userAgent && /googlebot|yandexbot|bingbot/i.test(userAgent)) {
+    console.log("🤖 Bot detected! Redirecting to bot server...");
+    target = targets.bot;
+  } else if (!referer) {
     console.log(
       "🚨 Suspicious access detected! Redirecting to unknown server..."
     );
-    createProxyMiddleware({ target: targets.unknown })(req, res);
-    return;
+    target = targets.unknown;
+  } else {
+    console.log("👤 Normal user detected! Redirecting to default server...");
   }
 
-  console.log("👤 Normal user detected! Redirecting to default server...");
-  createProxyMiddleware({ target: targets.default })(req, res);
+  proxy.web(req, res, { target, changeOrigin: true }, (err) => {
+    console.error("❌ Proxy error:", err);
+    res.writeHead(500, { "Content-Type": "text/plain" });
+    res.end("Proxy error occurred.");
+  });
 });
 
 const PORT = 8080;
