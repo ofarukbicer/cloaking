@@ -47,11 +47,16 @@ const server = http.createServer((req, res) => {
     console.log("👤 Normal user detected! Redirecting to default server...");
   }
 
-  proxy.web(req, res, { target, changeOrigin: true }, (err) => {
-    console.error("❌ Proxy error:", err);
-    res.writeHead(500, { "Content-Type": "text/plain" });
-    res.end("Proxy error occurred.");
-  });
+  proxy.web(
+    req,
+    res,
+    { target: target + req?.url ?? "", changeOrigin: true },
+    (err) => {
+      console.error("❌ Proxy error:", err);
+      res.writeHead(500, { "Content-Type": "text/plain" });
+      res.end("Proxy error occurred.");
+    }
+  );
 });
 
 const PORT = 8080;
